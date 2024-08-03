@@ -4579,7 +4579,12 @@ static bool ParseBuffer(Buffer *buffer, std::string *err, const detail::json &o,
           return false;
         }
       } else {
+
         // External .bin file.
+#ifdef TINYGLTF_NO_EXTERNAL_BUFFERS
+        buffer->data.resize(byteLength);
+        return true;
+#else
         std::string decoded_uri;
         if (!uri_cb->decode(buffer->uri, &decoded_uri, uri_cb->user_data)) {
           return false;
@@ -4590,6 +4595,7 @@ static bool ParseBuffer(Buffer *buffer, std::string *err, const detail::json &o,
                               /* max_file_size */ max_buffer_size, fs)) {
           return false;
         }
+#endif // TINYGLTF_NO_EXTERNAL_BUFFERS
       }
     } else {
       // load data from (embedded) binary data
@@ -4630,6 +4636,10 @@ static bool ParseBuffer(Buffer *buffer, std::string *err, const detail::json &o,
       }
     } else {
       // Assume external .bin file.
+#ifdef TINYGLTF_NO_EXTERNAL_BUFFERS
+        buffer->data.resize(byteLength);
+        return true;
+#else
       std::string decoded_uri;
       if (!uri_cb->decode(buffer->uri, &decoded_uri, uri_cb->user_data)) {
         return false;
@@ -4640,6 +4650,7 @@ static bool ParseBuffer(Buffer *buffer, std::string *err, const detail::json &o,
                             /* max file size */ max_buffer_size, fs)) {
         return false;
       }
+#endif // TINYGLTF_NO_EXTERNAL_BUFFERS
     }
   }
 
