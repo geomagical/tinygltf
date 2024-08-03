@@ -7510,7 +7510,11 @@ static void SerializeGltfBufferBin(const Buffer &buffer, detail::json &o,
 
 static void SerializeGltfBuffer(const Buffer &buffer, detail::json &o) {
   SerializeNumberProperty("byteLength", buffer.data.size(), o);
-  SerializeGltfBufferData(buffer.data, o);
+  if (buffer.uri.size()) {
+    SerializeStringProperty("uri", buffer.uri, o);
+  } else { 
+    SerializeGltfBufferData(buffer.data, o);
+  }
 
   if (buffer.name.size()) SerializeStringProperty("name", buffer.name, o);
 
